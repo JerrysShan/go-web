@@ -6,15 +6,12 @@ import (
 	"go-web/schemas"
 )
 
-func Create(s schemas.User) error {
+func Create(s *schemas.User) (int64, int, error) {
 	u := &models.User{}
 	u.Name = s.Name
 	u.UID = s.UID
 	affectedRows, err := mysql.UserDAO.Insert(u)
-	if affectedRows == 1 {
-		return nil
-	}
-	return err
+	return affectedRows, u.ID, err
 }
 
 func FindByUid(uid int64) (*models.User, error) {
@@ -22,6 +19,18 @@ func FindByUid(uid int64) (*models.User, error) {
 	where["uid"] = uid
 	data, err := mysql.UserDAO.Get(where)
 	return data, err
+}
+
+func IsExist(uid int64) (bool, error) {
+	return mysql.UserDAO.Exist(&models.User{UID: uid})
+}
+
+func CreateRoles(userId int, roleIds []int) (int64, error) {
+	var userRoles []*models.UserRole
+	for _, roleId := range roleIds {
+		userRoles = append(userRoles, &models.UserRole{UserID: userId, RoleID: roleId})
+	}
+	return mysql.UserRoleDAO.InsertMany(userRoles)
 }
 
 func Query(s *schemas.User) ([]models.User, error) {

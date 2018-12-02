@@ -12,8 +12,17 @@ func (rd *roleDao) Select(where map[string]interface{}, page, pageSize int) (rol
 	return
 }
 
-func (rd *roleDao) Insert(role ...interface{}) (int64, error) {
-	affected, err := db.Insert(role...)
+func (rd *roleDao) Exist(role *models.Role) (bool, error) {
+	return db.Exist(role)
+}
+
+func (rd *roleDao) Insert(role *models.Role) (int64, error) {
+	affected, err := db.InsertOne(role)
+	return affected, err
+}
+
+func (rd *roleDao) InsertMany(role []models.Role) (int64, error) {
+	affected, err := db.Insert(role)
 	return affected, err
 }
 

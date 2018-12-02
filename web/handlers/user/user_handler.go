@@ -44,16 +44,22 @@ func Create(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "参数错误"})
 		return
 	}
-	if data, err := user.FindByUid(schema.UID); err != nil {
+	if exist, err := user.IsExist(schema.UID); err != nil {
 		utils.Logger.Error("查询账户出现错误:", err)
 		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "创建出错"})
 		return
-	} else if data != nil {
-		c.JSON(http.StatusOK, gin.H{"code": 0, "data": data, "msg": "账户已存在"})
+	} else if exist {
+		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "账户已存在"})
 		return
 	}
-	err := user.Create(schema)
-	if err != nil {
+	affected, ID, err := user.Create(&schema)
+	if err != nil || affected == 0 {
+		utils.Logger.Error("创建用户出现错误", err)
+		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "创建出错"})
+		return
+	}
+	affected, err = user.CreateRoles(ID, schema.RoleIds)
+	if err != nil || affected == 0 {
 		utils.Logger.Error("创建用户出现错误", err)
 		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "创建出错"})
 		return

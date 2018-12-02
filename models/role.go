@@ -1,7 +1,7 @@
 package models
 
 type Role struct {
-	ID      int64 `xorm:"pk autoincr 'id'"`
+	ID      int `xorm:"pk autoincr 'id'"`
 	Name    string
 	Created int64 `xorm:"created"`
 	Updated int64 `xorm:"updated"`

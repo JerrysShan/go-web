@@ -19,8 +19,17 @@ func (ud *userDao) Get(where map[string]interface{}) (*models.User, error) {
 	return &user, err
 }
 
-func (ud *userDao) Insert(u ...interface{}) (int64, error) {
-	affected, err := db.Insert(u...)
+func (ud *userDao) Exist(user *models.User) (bool, error) {
+	return db.Exist(user)
+}
+
+func (ud *userDao) Insert(u *models.User) (int64, error) {
+	affected, err := db.InsertOne(u)
+	return affected, err
+}
+
+func (ud *userDao) InsertMany(u []models.User) (int64, error) {
+	affected, err := db.Insert(u)
 	return affected, err
 }
 

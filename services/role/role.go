@@ -23,10 +23,23 @@ func FindByName(name string) ([]models.Role, error) {
 	return mysql.RoleDAO.Select(where, 1, 10)
 }
 
-func Insert(s *schemas.Role) (int64, error) {
+func IsExist(name string) (bool, error) {
+	return mysql.RoleDAO.Exist(&models.Role{Name: name})
+}
+
+func Insert(s *schemas.Role) (int64, int, error) {
 	r := &models.Role{}
 	r.Name = s.Name
-	return mysql.RoleDAO.Insert(r)
+	affectd, err := mysql.RoleDAO.Insert(r)
+	return affectd, r.ID, err
+}
+
+func CreateResources(roleId int, resourceIds []int) (int64, error) {
+	var roleResource []*models.RoleResource
+	for _, resourceID := range resourceIds {
+		roleResource = append(roleResource, &models.RoleResource{RoleID: roleId, ResourceID: resourceID})
+	}
+	return mysql.RoleResourceDAO.InsertMany(roleResource)
 }
 
 func Update(s *schemas.Role) (int64, error) {

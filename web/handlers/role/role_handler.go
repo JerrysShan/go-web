@@ -67,15 +67,26 @@ func Create(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "参数错误"})
 		return
 	}
-	if data, err := role.FindByName(schema.Name); err != nil {
+	if len(schema.ResourceIds) == 0 {
+		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "参数错误"})
+		return
+	}
+	if exist, err := role.IsExist(schema.Name); err != nil {
 		utils.Logger.Error("创建角色出错", err)
 		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "创建出错"})
 		return
-	} else if len(data) > 0 {
+	} else if exist {
 		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "角色名字已经存在"})
 		return
 	}
-	if affected, err := role.Insert(&schema); affected == 0 || err != nil {
+	affected, ID, err := role.Insert(&schema)
+	if affected == 0 || err != nil {
+		utils.Logger.Error("创建角色出错", err, affected)
+		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "创建出错"})
+		return
+	}
+	affected, err = role.CreateResources(ID, schema.ResourceIds)
+	if affected == 0 || err != nil {
 		utils.Logger.Error("创建角色出错", err, affected)
 		c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "创建出错"})
 		return
