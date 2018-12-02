@@ -17,5 +17,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	db.ShowSQL(true)
 	logger.Info("mysql connect success")
 }

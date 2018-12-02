@@ -6,9 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Start(env string) *gin.Engine {
+func Start() {
 	app := gin.Default()
-	app.Run(":3000")
 	router.InitRouter(app)
-	return app
+	app.Run(":3000")
 }

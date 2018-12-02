@@ -2,7 +2,7 @@ appname="go_web"
 port=8080
 
 [mysql]
-url="root:@local/test?charset=utf8&parseTime=True&loc=Local"
+url="root:@/test?charset=utf8&parseTime=True&loc=Local"
 
 [redis]
 host="127.0.0.1"

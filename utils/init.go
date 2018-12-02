@@ -27,7 +27,7 @@ func init() {
 	default:
 		configName = "dev"
 	}
-	initConfig("../conf", configName)
+	initConfig("./conf", configName)
 	initLog(runMode)
 }
 
